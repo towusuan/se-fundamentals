@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Engineering Fundamentals</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+        }
+        
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: white;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .center-circle:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+        }
+        
+        .fundamentals-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 30px;
+            height: 600px;
+            width: 100%;
+        }
+        
+        .fundamental-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .fundamental-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .fundamental-card:hover::before {
+            left: 100%;
+        }
+        
+        .fundamental-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        
+        .card-description {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #4a5568;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .fundamental-card:hover .card-description {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Individual card colors */
+        .card-1 .card-icon { background: linear-gradient(45deg, #667eea, #764ba2); }
+        .card-2 .card-icon { background: linear-gradient(45deg, #f093fb, #f5576c); }
+        .card-3 .card-icon { background: linear-gradient(45deg, #4facfe, #00f2fe); }
+        .card-4 .card-icon { background: linear-gradient(45deg, #43e97b, #38f9d7); }
+        .card-5 .card-icon { background: linear-gradient(45deg, #fa709a, #fee140); }
+        .card-6 .card-icon { background: linear-gradient(45deg, #a8edea, #fed6e3); }
+        .card-7 .card-icon { background: linear-gradient(45deg, #ff9a9e, #fecfef); }
+        .card-8 .card-icon { background: linear-gradient(45deg, #a18cd1, #fbc2eb); }
+        
+        .connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .connection-line {
+            stroke: rgba(255, 255, 255, 0.3);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 5,5;
+            animation: dash 20s linear infinite;
+        }
+        
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -200;
+            }
+        }
+        
+        .info-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .info-panel.active {
+            right: 0;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+        
+        .panel-content {
+            line-height: 1.6;
+            color: #4a5568;
+        }
+        
+        @media (max-width: 768px) {
+            .fundamentals-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+                height: 800px;
+            }
+            
+            .center-circle {
+                width: 150px;
+                height: 150px;
+                font-size: 1.2rem;
+            }
+            
+            .info-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Software Engineering Fundamentals</h1>
+        <p>Click on any fundamental to learn more about it</p>
+    </div>
+    
+    <div class="container">
+        <svg class="connection-lines" viewBox="0 0 1200 600">
+            <!-- Lines connecting cards to center -->
+            <line class="connection-line" x1="150" y1="150" x2="600" y2="300" />
+            <line class="connection-line" x1="450" y1="150" x2="600" y2="300" />
+            <line class="connection-line" x1="750" y1="150" x2="600" y2="300" />
+            <line class="connection-line" x1="1050" y1="150" x2="600" y2="300" />
+            <line class="connection-line" x1="150" y1="450" x2="600" y2="300" />
+            <line class="connection-line" x1="450" y1="450" x2="600" y2="300" />
+            <line class="connection-line" x1="750" y1="450" x2="600" y2="300" />
+            <line class="connection-line" x1="1050" y1="450" x2="600" y2="300" />
+        </svg>
+        
+        <div class="center-circle" onclick="showInfo('overview')">
+            Software<br>Engineering<br>Fundamentals
+        </div>
+        
+        <div class="fundamentals-grid">
+            <div class="fundamental-card card-1" onclick="showInfo('requirements')">
+                <div class="card-icon">📋</div>
+                <div class="card-title">Requirements Engineering</div>
+                <div class="card-description">Understanding and documenting what the software needs to accomplish</div>
+            </div>
+            
+            <div class="fundamental-card card-2" onclick="showInfo('design')">
+                <div class="card-icon">🎨</div>
+                <div class="card-title">Design Principles</div>
+                <div class="card-description">Modularity, abstraction, encapsulation, and separation of concerns</div>
+            </div>
+            
+            <div class="fundamental-card card-3" onclick="showInfo('sdlc')">
+                <div class="card-icon">🔄</div>
+                <div class="card-title">SDLC</div>
+                <div class="card-description">Structured approaches like Agile, Waterfall, and DevOps</div>
+            </div>
+            
+            <div class="fundamental-card card-4" onclick="showInfo('quality')">
+                <div class="card-icon">✨</div>
+                <div class="card-title">Code Quality</div>
+                <div class="card-description">Clean, readable, maintainable code following best practices</div>
+            </div>
+            
+            <div class="fundamental-card card-5" onclick="showInfo('testing')">
+                <div class="card-icon">🧪</div>
+                <div class="card-title">Testing & QA</div>
+                <div class="card-description">Comprehensive testing strategies to ensure software quality</div>
+            </div>
+            
+            <div class="fundamental-card card-6" onclick="showInfo('version')">
+                <div class="card-icon">📚</div>
+                <div class="card-title">Version Control</div>
+                <div class="card-description">Managing code changes and coordinating team collaboration</div>
+            </div>
+            
+            <div class="fundamental-card card-7" onclick="showInfo('architecture')">
+                <div class="card-icon">🏗️</div>
+                <div class="card-title">Architecture</div>
+                <div class="card-description">High-level structure and component interactions</div>
+            </div>
+            
+            <div class="fundamental-card card-8" onclick="showInfo('management')">
+                <div class="card-icon">📊</div>
+                <div class="card-title">Project Management</div>
+                <div class="card-description">Planning, coordination, and stakeholder communication</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-panel" id="infoPanel">
+        <button class="close-btn" onclick="closeInfo()">×</button>
+        <div class="panel-title" id="panelTitle"></div>
+        <div class="panel-content" id="panelContent"></div>
+    </div>
+    
+    <script>
+        const infoData = {
+            overview: {
+                title: "Software Engineering Fundamentals",
+                content: `
+                    <p>Software engineering is a systematic approach to designing, developing, and maintaining software systems. These eight fundamentals work together to create a disciplined framework for building reliable, scalable, and maintainable software.</p>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Why These Fundamentals Matter:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Reliability:</strong> Ensures software works as expected</li>
+                        <li><strong>Maintainability:</strong> Makes code easy to modify and extend</li>
+                        <li><strong>Scalability:</strong> Allows systems to handle growth</li>
+                        <li><strong>Team Collaboration:</strong> Enables effective teamwork</li>
+                        <li><strong>Cost Efficiency:</strong> Reduces development and maintenance costs</li>
+                    </ul>
+                    
+                    <p style="margin-top: 20px;">Click on individual fundamentals to learn more about each one!</p>
+                `
+            },
+            requirements: {
+                title: "Requirements Engineering",
+                content: `
+                    <p>Requirements engineering is the foundation of successful software projects. It involves systematically gathering, analyzing, and documenting what the software system needs to accomplish.</p>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Key Activities:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Elicitation:</strong> Gathering requirements from stakeholders through interviews, surveys, and observation</li>
+                        <li><strong>Analysis:</strong> Understanding feasibility, conflicts, and dependencies</li>
+                        <li><strong>Specification:</strong> Documenting requirements clearly and unambiguously</li>
+                        <li><strong>Validation:</strong> Ensuring requirements meet stakeholder needs</li>
+                        <li><strong>Management:</strong> Tracking changes and maintaining traceability</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Types of Requirements:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Functional:</strong> What the system should do</li>
+                        <li><strong>Non-functional:</strong> Quality attributes like performance, security, usability</li>
+                        <li><strong>Business:</strong> High-level business objectives and constraints</li>
+                    </ul>
+                `
+            },
+            design: {
+                title: "Design Principles",
+                content: `
+                    <p>Good software design principles guide developers in creating systems that are easy to understand, modify, and maintain. These principles help manage complexity and improve code quality.</p>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Core Principles:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Modularity:</strong> Breaking systems into manageable, cohesive components</li>
+                        <li><strong>Abstraction:</strong> Hiding implementation details behind clear interfaces</li>
+                        <li><strong>Encapsulation:</strong> Bundling data and methods that operate on that data</li>
+                        <li><strong>Separation of Concerns:</strong> Dividing functionality into distinct sections</li>
+                        <li><strong>Single Responsibility:</strong> Each component should have one reason to change</li>
+                        <li><strong>Open/Closed Principle:</strong> Open for extension, closed for modification</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Benefits:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li>Easier debugging and testing</li>
+                        <li>Better code reusability</li>
+                        <li>Simplified maintenance</li>
+                        <li>Improved team collaboration</li>
+                    </ul>
+                `
+            },
+            sdlc: {
+                title: "Software Development Life Cycle",
+                content: `
+                    <p>SDLC provides structured approaches to planning, creating, testing, and deploying software systems. Different methodologies suit different project types and organizational needs.</p>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Common Methodologies:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Waterfall:</strong> Sequential phases with clear documentation</li>
+                        <li><strong>Agile:</strong> Iterative development with customer collaboration</li>
+                        <li><strong>Scrum:</strong> Sprint-based Agile framework with defined roles</li>
+                        <li><strong>DevOps:</strong> Integration of development and operations</li>
+                        <li><strong>Lean:</strong> Eliminating waste and maximizing value</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Typical SDLC Phases:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li>Planning and analysis</li>
+                        <li>Design and architecture</li>
+                        <li>Implementation and coding</li>
+                        <li>Testing and quality assurance</li>
+                        <li>Deployment and release</li>
+                        <li>Maintenance and support</li>
+                    </ul>
+                `
+            },
+            quality: {
+                title: "Code Quality & Best Practices",
+                content: `
+                    <p>Code quality determines how readable, maintainable, and reliable software is. Following established best practices helps teams create code that stands the test of time.</p>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Key Practices:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Naming Conventions:</strong> Clear, descriptive names for variables, functions, and classes</li>
+                        <li><strong>Code Documentation:</strong> Comments and documentation that explain why, not just what</li>
+                        <li><strong>Code Reviews:</strong> Peer review to catch issues and share knowledge</li>
+                        <li><strong>Consistent Formatting:</strong> Using automated tools for consistent style</li>
+                        <li><strong>DRY Principle:</strong> Don't Repeat Yourself - eliminate duplication</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">SOLID Principles:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>S:</strong> Single Responsibility Principle</li>
+                        <li><strong>O:</strong> Open/Closed Principle</li>
+                        <li><strong>L:</strong> Liskov Substitution Principle</li>
+                        <li><strong>I:</strong> Interface Segregation Principle</li>
+                        <li><strong>D:</strong> Dependency Inversion Principle</li>
+                    </ul>
+                `
+            },
+            testing: {
+                title: "Testing & Quality Assurance",
+                content: `
+                    <p>Testing is crucial for ensuring software behaves correctly and meets requirements. A comprehensive testing strategy catches defects early and builds confidence in the system.</p>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Testing Levels:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Unit Testing:</strong> Testing individual components in isolation</li>
+                        <li><strong>Integration Testing:</strong> Testing component interactions</li>
+                        <li><strong>System Testing:</strong> Testing the complete integrated system</li>
+                        <li><strong>Acceptance Testing:</strong> Validating system meets business requirements</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Testing Types:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Functional Testing:</strong> What the system does</li>
+                        <li><strong>Performance Testing:</strong> How fast and stable it is</li>
+                        <li><strong>Security Testing:</strong> Protection against threats</li>
+                        <li><strong>Usability Testing:</strong> User experience and interface</li>
+                        <li><strong>Regression Testing:</strong> Ensuring changes don't break existing functionality</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Best Practices:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li>Test-Driven Development (TDD)</li>
+                        <li>Automated testing pipelines</li>
+                        <li>Continuous integration/deployment</li>
+                    </ul>
+                `
+            },
+            version: {
+                title: "Version Control & Configuration Management",
+                content: `
+                    <p>Version control systems track changes to code over time and enable multiple developers to collaborate effectively. Modern development is impossible without robust version control.</p>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Key Concepts:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Repositories:</strong> Central storage for project files and history</li>
+                        <li><strong>Commits:</strong> Snapshots of changes with descriptive messages</li>
+                        <li><strong>Branches:</strong> Parallel development lines for features or experiments</li>
+                        <li><strong>Merging:</strong> Combining changes from different branches</li>
+                        <li><strong>Tagging:</strong> Marking specific versions or releases</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Popular Systems:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Git:</strong> Distributed version control (most popular)</li>
+                        <li><strong>Subversion (SVN):</strong> Centralized version control</li>
+                        <li><strong>Mercurial:</strong> Distributed alternative to Git</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Branching Strategies:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li>Git Flow for release management</li>
+                        <li>GitHub Flow for continuous deployment</li>
+                        <li>Feature branching for isolated development</li>
+                    </ul>
+                `
+            },
+            architecture: {
+                title: "Software Architecture",
+                content: `
+                    <p>Software architecture defines the high-level structure of software systems, including components, their relationships, and principles governing their design and evolution.</p>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Architectural Patterns:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Layered Architecture:</strong> Organizing code into horizontal layers</li>
+                        <li><strong>MVC (Model-View-Controller):</strong> Separating data, UI, and logic</li>
+                        <li><strong>Microservices:</strong> Small, independent, deployable services</li>
+                        <li><strong>Event-Driven:</strong> Components communicate through events</li>
+                        <li><strong>Client-Server:</strong> Distributed computing model</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Key Decisions:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Technology Stack:</strong> Programming languages, frameworks, databases</li>
+                        <li><strong>Data Flow:</strong> How information moves through the system</li>
+                        <li><strong>Integration:</strong> How components and external systems connect</li>
+                        <li><strong>Scalability:</strong> How the system handles increased load</li>
+                        <li><strong>Security:</strong> Protection mechanisms and access controls</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Architecture Documentation:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li>System context diagrams</li>
+                        <li>Component and deployment diagrams</li>
+                        <li>Architecture decision records (ADRs)</li>
+                    </ul>
+                `
+            },
+            management: {
+                title: "Project Management",
+                content: `
+                    <p>Software project management involves planning, organizing, and coordinating resources to successfully deliver software projects on time, within budget, and meeting quality requirements.</p>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Key Activities:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Planning:</strong> Defining scope, timeline, and resource requirements</li>
+                        <li><strong>Estimation:</strong> Predicting effort, cost, and duration</li>
+                        <li><strong>Scheduling:</strong> Creating and maintaining project timelines</li>
+                        <li><strong>Risk Management:</strong> Identifying and mitigating potential issues</li>
+                        <li><strong>Communication:</strong> Keeping stakeholders informed and aligned</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Management Approaches:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Traditional:</strong> Waterfall with detailed upfront planning</li>
+                        <li><strong>Agile:</strong> Iterative development with frequent feedback</li>
+                        <li><strong>Hybrid:</strong> Combining traditional and agile approaches</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px; color: #2d3748;">Tools and Techniques:</h3>
+                    <ul style="margin-top: 10px;">
+                        <li>Project management software (Jira, Asana, Trello)</li>
+                        <li>Gantt charts and burndown charts</li>
+                        <li>Daily standups and sprint reviews</li>
+                        <li>Retrospectives for continuous improvement</li>
+                    </ul>
+                `
+            }
+        };
+        
+        function showInfo(topic) {
+            const panel = document.getElementById('infoPanel');
+            const title = document.getElementById('panelTitle');
+            const content = document.getElementById('panelContent');
+            
+            title.textContent = infoData[topic].title;
+            content.innerHTML = infoData[topic].content;
+            
+            panel.classList.add('active');
+        }
+        
+        function closeInfo() {
+            const panel = document.getElementById('infoPanel');
+            panel.classList.remove('active');
+        }
+        
+        // Close panel when clicking outside
+        document.addEventListener('click', function(event) {
+            const panel = document.getElementById('infoPanel');
+            if (panel.classList.contains('active') && !panel.contains(event.target) && 
+                !event.target.closest('.fundamental-card') && !event.target.closest('.center-circle')) {
+                closeInfo();
+            }
+        });
+        
+        // Add escape key to close panel
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeInfo();
+            }
+        });
+    </script>
+</body>
+</html>
